@@ -8,7 +8,7 @@ import java.net.*;
 public class ClientListener extends Thread {
 	
 
-	public String FILE_NAME = "c:/temp/source-downloaded.pdf";
+	public String FILE_NAME = "Clinet1.txt";
 	public final int FILE_SIZE = 6022386; //5.743 MB
 	private ServerSocket serverSocket;
 	public int clientPORT = 9001; // default port to be used for listener

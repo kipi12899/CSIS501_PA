@@ -234,6 +234,16 @@ public class Peer extends Thread {
 		this.nextPeer = ip;
 	}
 	
+	public void Setup(String index, String nextIndex, String nextIP, String prevIndex, String prevIP)
+	{
+		this.Index = Integer.parseInt(index);
+		this.nextIndex = Integer.parseInt(nextIndex);
+		this.nextPeer = nextIP;
+		this.nextIndex = Integer.parseInt(prevIndex);
+		this.nextPeer = prevIP;
+	}
+	
+	
 	private String GetSuccessor()
 	{
 		return "SUCCESSOR," + this.nextIndex + "," + this.nextPeer;
