@@ -35,9 +35,29 @@ public class Peer extends Thread {
 	Map<String,String> data = null;
 	private final int MOD = 16;
 	
+	public Peer(String index, String nextIndex, String nextIP, String prevIndex, String prevIP)
+	{
+		this.Index = Integer.parseInt(index);
+		this.nextIndex = Integer.parseInt(nextIndex);
+		this.nextPeer = nextIP;
+		this.prevIndex = Integer.parseInt(prevIndex);
+		this.prevPeer = prevIP;
+		
+		Initilize();
+	}
+	
+	
 	public Peer()
 	{
+		
+		Initilize();
 
+			
+		
+	}
+	
+	private void Initilize()
+	{
 		data = new HashMap<String,String>(); 
 		
 		// Setup
@@ -59,13 +79,11 @@ public class Peer extends Thread {
 		                System.out.println("Ping "+nextPeer);
 		            }
 		        }, 
-		        5000  //every 5 seconds
+		        30000, 30000  //every 5 seconds
 		);
 		
-		
-		
-	}
 	
+	}
 	
 	
 	public void run() 
@@ -79,13 +97,18 @@ public class Peer extends Thread {
 	           Socket server = serverSocket.accept();
 	           
 	           System.out.println("Connected to " + server.getRemoteSocketAddress());
-	           DataInputStream in = new DataInputStream(server.getInputStream());
-	           
-	           String reply = ProcessRequest(in.readUTF());
-	           
+	           BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
+
+//	           DataInputStream in = new DataInputStream(server.getInputStream());
+	           String input = in.readLine();
+	     //   		   System.out.println("Received: "+input);
+	           String reply = ProcessRequest(input);
+	   //        System.out.println("reply: "+reply);
 	          //Send reply from server
-	           DataOutputStream out = new DataOutputStream(server.getOutputStream());	          
-	           out.writeUTF(reply);
+	          // DataOutputStream out = new DataOutputStream(server.getOutputStream());	          
+	           
+	           PrintWriter out = new PrintWriter(server.getOutputStream(), true);
+	           out.println(reply);
 	           server.close();
 	           
 	        } catch (SocketTimeoutException s) {
@@ -301,13 +324,13 @@ public class Peer extends Thread {
 	
 	private String SendMessage(String IP, String message)
     {
-    	String response = null;
+    	String response="";
     	 try (Socket socket = new Socket(IP, PORT)) {
     		 
  	        OutputStream output = socket.getOutputStream();
  	        PrintWriter writer = new PrintWriter(output, true);
  	        
- 	
+ 	        writer.println(message);
  	        InputStream input = socket.getInputStream();
  	
  	        BufferedReader reader = new BufferedReader(new InputStreamReader(input));

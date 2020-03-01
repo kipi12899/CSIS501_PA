@@ -8,9 +8,13 @@ public class Server {
 	
 	public static void main(String[] args) 
 	{
-		
-			
-			Peer p = new Peer();
+		Peer p;
+			if(args.length >0)
+			{
+				p = new Peer(args[0],args[1],args[2],args[3],args[4]);
+			}
+			else
+				p = new Peer();
 			p.start();
 			
 			

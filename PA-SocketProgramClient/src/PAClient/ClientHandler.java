@@ -2,6 +2,7 @@ package PAClient;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -154,6 +155,9 @@ public class ClientHandler extends Thread {
     public void DownloadFile(String fileName, String clientIP) throws UnknownHostException, IOException
     {
     
+    	
+    	
+    	
 	 	int bytesRead;
 	    int current = 0;
 	    FileOutputStream fos = null;
@@ -163,23 +167,28 @@ public class ClientHandler extends Thread {
 	    	socket = new Socket(clientIP, FT_PORT);
 	      System.out.println("Connecting...");
 
-	      // receive file
-	      byte [] byteArray  = new byte [FILE_SIZE];
-	      InputStream is = socket.getInputStream();
-	      fos = new FileOutputStream(fileName);
-	      bos = new BufferedOutputStream(fos);
-	      bytesRead = is.read(byteArray,0,byteArray.length);
-	      current = bytesRead;
+	      
+	      
 
-	      do {
-	         bytesRead = is.read(byteArray, current, (byteArray.length-current));
-	         if(bytesRead >= 0) 
-	        	 current += bytesRead;
-	      } while(bytesRead > -1);
+	      DataInputStream dis = new DataInputStream(socket.getInputStream());
+			fos = new FileOutputStream("c:\\CSIS501\\"+fileName);
+			byte[] buffer = new byte[4096];
+			
+			int filesize = FILE_SIZE; // Send file size in separate msg
+			int read = 0;
+			int totalRead = 0;
+			int remaining = filesize;
+			while((read = dis.read(buffer, 0, Math.min(buffer.length, remaining))) > 0) {
+				totalRead += read;
+				remaining -= read;
+				System.out.println("read " + totalRead + " bytes.");
+				fos.write(buffer, 0, read);
+			}
+			
+			fos.close();
+			dis.close();
+	      
 
-	      bos.write(byteArray, 0 , current);
-	      bos.flush();
-	      System.out.println("File " + fileName  + " downloaded (" + current + " bytes read)");
 	    }
 	    finally {
 	      if (fos != null) fos.close();
@@ -197,7 +206,7 @@ public class ClientHandler extends Thread {
     		 
  	        OutputStream output = socket.getOutputStream();
  	        PrintWriter writer = new PrintWriter(output, true);
- 	        
+ 	        writer.println(message);
  	
  	        InputStream input = socket.getInputStream();
  	
